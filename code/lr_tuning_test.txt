@@ -1,0 +1,37 @@
+19962
+rep 0 - lr 0.01
+	Accuracy: 0.504909327722673 %
+	Precision: // %
+	Recall: 0.0 %
+rep 1 - lr 0.01
+	Accuracy: 0.504909327722673 %
+	Precision: // %
+	Recall: 0.0 %
+rep 2 - lr 0.01
+	Accuracy: 0.504909327722673 %
+	Precision: // %
+	Recall: 0.0 %
+rep 0 - lr 0.001
+	Accuracy: 0.9095281033964533 %
+	Precision: 0.9112944291679397 %
+	Recall: 0.9053930992613579 %
+rep 1 - lr 0.001
+	Accuracy: 0.9040677286845006 %
+	Precision: 0.9223023107907569 %
+	Recall: 0.8804006880501872 %
+rep 2 - lr 0.001
+	Accuracy: 0.909177437130548 %
+	Precision: 0.8970675063963787 %
+	Recall: 0.9223919862389962 %
+rep 0 - lr 0.0001
+	Accuracy: 0.843352369502054 %
+	Precision: 0.9125549584758182 %
+	Recall: 0.756045735100678 %
+rep 1 - lr 0.0001
+	Accuracy: 0.8501653140967839 %
+	Precision: 0.9041754632887637 %
+	Recall: 0.7800263078012749 %
+rep 2 - lr 0.0001
+	Accuracy: 0.8330828574291154 %
+	Precision: 0.887587267778961 %
+	Recall: 0.7589800667813417 %
