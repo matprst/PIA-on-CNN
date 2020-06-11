@@ -100,6 +100,105 @@ class Net3(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
+class Net4(nn.Module):
+    def __init__(self):
+        super(Net4, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(16, 32, 5)
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(32 * 4**2, 84)
+        # self.fc2 = nn.Linear(120, 84)
+        self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        x = self.pool3(F.relu(self.conv3(x)))
+
+        x = x.view(-1, 32 * 4**2)
+        x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc2(x)
+        return x
+
+class Net5(nn.Module):
+    def __init__(self):
+        super(Net5, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(16, 32, 5)
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(32 * 4**2, 1)
+        # self.fc2 = nn.Linear(120, 84)
+        # self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        x = self.pool3(F.relu(self.conv3(x)))
+
+        x = x.view(-1, 32 * 4**2)
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc1(x)
+        return x
+
+class Net6(nn.Module):
+    def __init__(self):
+        super(Net6, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(16 * 13**2, 84)
+        # self.fc2 = nn.Linear(120, 84)
+        self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        # print(x.size())
+        x = x.view(-1, 16 * 13**2)
+        x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc2(x)
+        return x
+
+class Net7(nn.Module):
+    def __init__(self):
+        super(Net7, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(16 * 13**2, 1)
+        # self.fc2 = nn.Linear(120, 84)
+        # self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        # print(x.size())
+        x = x.view(-1, 16 * 13**2)
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc1(x)
+        return x
+
 # transform = transforms.Compose(
 #     [transforms.ToTensor(),
 #      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -181,7 +280,7 @@ def get_eval_metrics(predicted, actual):
     return tp, tn, fp, fn
 
 def evaluate(path):
-    net = Net3()
+    net = Net7()
     net.load_state_dict(torch.load(path))
 
     # outputs = net(images)
@@ -237,8 +336,10 @@ def evaluate(path):
 #         path = 'shadow_Mouth_Slightly_Open_model_0.001.pth'
 #         evaluate(path)
 
-for rep in range(2):
-    for t in [0, 1]:
-        path = f'./models/a3_shadow_{rep}_{t}.pth'
-        print(path)
-        evaluate(path)
+
+path = f'./models/10130.pth'
+print(path)
+evaluate(path)
+# path = f'./models/9001.pth'
+# print(path)
+# evaluate(path)

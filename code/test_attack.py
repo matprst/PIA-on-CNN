@@ -19,6 +19,7 @@ import pandas as pd
 import datasets
 import sys
 import os
+import glob
 
 
 # class ShadowDataset(Dataset):
@@ -74,7 +75,7 @@ class ShadowDataset(Dataset):
 
     def get_weights(path, device='cpu'):
         weights = torch.Tensor().to(device)
-        for k, v in torch.load(path).items():
+        for k, v in torch.load(path, map_location=torch.device(device)).items():
             weights = torch.cat((weights, v.view(-1).to(device)))
         return weights
 
@@ -101,6 +102,174 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
+    def __str__(self):
+        return 'a1'
+
+class Net2(nn.Module):
+    def __init__(self):
+        super(Net2, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        # self.conv2 = nn.Conv2d(6, 16, 5)
+        # self.pool2 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(6 * 30**2, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        # x = self.pool2(F.relu(self.conv2(x)))
+        # print(x.size())
+        x = x.view(-1, 6 * 30**2)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+    def __str__(self):
+        return 'a2'
+
+class Net3(nn.Module):
+    def __init__(self):
+        super(Net3, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(16, 32, 5)
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(32 * 4**2, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        x = self.pool3(F.relu(self.conv3(x)))
+
+        x = x.view(-1, 32 * 4**2)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+    def __str__(self):
+        return 'a3'
+
+class Net4(nn.Module):
+    def __init__(self):
+        super(Net4, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(16, 32, 5)
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(32 * 4**2, 84)
+        # self.fc2 = nn.Linear(120, 84)
+        self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        x = self.pool3(F.relu(self.conv3(x)))
+
+        x = x.view(-1, 32 * 4**2)
+        x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc2(x)
+        return x
+
+    def __str__(self):
+        return 'a4'
+
+class Net5(nn.Module):
+    def __init__(self):
+        super(Net5, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.conv3 = nn.Conv2d(16, 32, 5)
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(32 * 4**2, 1)
+        # self.fc2 = nn.Linear(120, 84)
+        # self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        x = self.pool3(F.relu(self.conv3(x)))
+
+        x = x.view(-1, 32 * 4**2)
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc1(x)
+        return x
+
+    def __str__(self):
+        return 'a5'
+
+class Net6(nn.Module):
+    def __init__(self):
+        super(Net6, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(16 * 13**2, 84)
+        # self.fc2 = nn.Linear(120, 84)
+        self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        # print(x.size())
+        x = x.view(-1, 16 * 13**2)
+        x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc2(x)
+        return x
+
+    def __str__(self):
+        return 'a6'
+
+class Net7(nn.Module):
+    def __init__(self):
+        super(Net7, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool1 = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.pool2 = nn.MaxPool2d(2, 2)
+        self.fc1 = nn.Linear(16 * 13**2, 1)
+        # self.fc2 = nn.Linear(120, 84)
+        # self.fc2 = nn.Linear(84, 1)
+
+    def forward(self, x):
+        # print(x.size())
+        x = self.pool1(F.relu(self.conv1(x)))
+        # print(x.size())
+        x = self.pool2(F.relu(self.conv2(x)))
+        # print(x.size())
+        x = x.view(-1, 16 * 13**2)
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        x = self.fc1(x)
+        return x
+
+    def __str__(self):
+        return 'a7'
 
 
 class AttackNet(nn.Module):
@@ -143,9 +312,7 @@ def get_eval_metrics(predicted, actual):
     # print(tp, tn, fp, fn)
     return tp, tn, fp, fn
 
-def evaluate(path):
-    net = AttackNet(in_dim=658825)
-    net.load_state_dict(torch.load(path))
+def evaluate(net):
 
     # outputs = net(images)
     # # print(outputs)
@@ -173,12 +340,12 @@ def evaluate(path):
             predicted = (outputs.view(-1)>0.5).float()
             # print(labels)
             # print(predicted)
-            print(f'total={total}, labels.size(0)={labels.size(0)}')
+            # print(f'total={total}, labels.size(0)={labels.size(0)}')
             total += labels.size(0)
             # print(predicted == labels)
             correct += (predicted == labels).sum().item()
 
-            print(predicted==labels)
+            # print(predicted==labels)
 
             # print(predicted)
             # print(labels)
@@ -199,23 +366,68 @@ def evaluate(path):
     print(f'\tAccuracy: {accuracy} %')
     print(f'\tPrecision: {precision} %')
     print(f'\tRecall: {recall} %')
+    return accuracy, precision, recall
 
-# for lr in [0.001, 0.001, 0.0001]:
-#     for rep in range(3):
-#         # PATH = f'./64_Mouth_Slightly_Open_model_{rep}_{lr}.pth'
-#         path = 'shadow_Mouth_Slightly_Open_model_0.001.pth'
-#         evaluate(path)
+def number_param(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-# shadow_dataset = ShadowDataset('./models/backup/valid_attr.csv', './models/backup/')
-shadow_dataset = ShadowDataset('./models/models.csv', './models/', split='valid', architecture='a2')
-testloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
+# shadow_dataset = ShadowDataset('./models/models.csv', './models/', split='train', architecture=str(target_model))
+# dataloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
 
-device = 'cuda:0'
-# attack_model = AttackNet().to(device)
+def get_model(architecture):
+    models = {
+        'a1': Net,
+        'a2': Net2,
+        'a3': Net3,
+        'a4': Net4,
+        'a5': Net5,
+        'a6': Net6,
+        'a7': Net7,
+    }
+    return models[architecture]
 
-path = f'./models/attack_model2.pth'
-print(path)
-evaluate(path)
+models = sorted(glob.glob('./models/a7-*.pth'))
+print(models)
+data = {
+    'model':[],
+    'architecture':[],
+    'num_param':[],
+    'accuracy':[],
+    'precision':[],
+    'recall':[]
+}
+
+for model in models:
+    filename = model.split('/')[-1]
+    architecture = filename.split('-')[0]
+    print(filename, architecture)
+    print(number_param(get_model('a6')()))
+
+    # print(filename, architecture)
+
+    # break
+    shadow_dataset = ShadowDataset('./models/models.csv', './models/', split='valid', architecture=architecture)
+    testloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
+
+    params = number_param(get_model(architecture)())
+    print(params)
+    attack_model = AttackNet(in_dim=params)
+    # net = AttackNet(in_dim=337721)
+    # path = './models/a6.pth'
+    attack_model.load_state_dict(torch.load(model))
+
+    device = 'cpu'
+
+    acc, prec, recall = evaluate(attack_model)
+    data['model'].append(filename)
+    data['architecture'].append(architecture)
+    data['num_param'].append(params)
+    data['accuracy'].append(acc)
+    data['precision'].append(prec)
+    data['recall'].append(recall)
+    # break
+df = pd.DataFrame(data)
+df.to_csv('./models/attack_models.csv', mode='a', header=True)
 
 
 # for i_batch, batch in enumerate(dataloader):
