@@ -242,7 +242,7 @@ class Net10(nn.Module):
 
 class AttackNet1(nn.Module):
     def __init__(self, in_dim=337721, out_dim=1):
-        super(AttackNet, self).__init__()
+        super(AttackNet1, self).__init__()
         self.fc1 = nn.Linear(in_dim, 10)
         self.fc2 = nn.Linear(10, out_dim)
 
