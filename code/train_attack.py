@@ -21,10 +21,7 @@ import sys
 import os
 
 import models
-
-
-def number_param(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+import utils
 
 
 def train_attack(model, epoch=10, filename='test'):
@@ -90,7 +87,7 @@ for attack in attack_models:
             shadow_dataset = datasets.ShadowDataset('./models/models.csv', './models/', split='train', architecture=str(target_model))
             dataloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
 
-            params = number_param(target_model)
+            params = utils.number_param(target_model)
             attack_model = attack(in_dim=params).to(device)
             filename = f'{attack_model}-{target_model}-{rep}'
             print(filename)

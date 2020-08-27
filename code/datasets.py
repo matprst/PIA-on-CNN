@@ -11,7 +11,7 @@ from torch.utils.data import Dataset, WeightedRandomSampler, RandomSampler, Data
 class ShadowDataset(Dataset):
     map_split = {'train':0, 'test':1, 'valid':2}
 
-    def __init__(self, csv_file, root_dir, split='train', architecture='a1'):
+    def __init__(self, csv_file, root_dir, split='train', architecture='a1', fcn=False, conv=False, device='cpu'):
         df = pd.read_csv(csv_file, index_col=0)
         mask_split = (df['split'] == ShadowDataset.map_split[split])
         mask_architecture = (df['architecture'] == architecture)
@@ -22,6 +22,10 @@ class ShadowDataset(Dataset):
         print('training set size:', len(self.proportions_frame))
         self.root_dir = root_dir
 
+        self.fcn = fcn # only use the weights of the linear layers
+        self.conv = conv # only use the weights of the convolution layers
+        self.device = device
+
     def __len__(self):
         return len(self.proportions_frame)
 
@@ -29,16 +33,23 @@ class ShadowDataset(Dataset):
         model_name = f'{self.proportions_frame.iloc[index].model}'
         model_path = os.path.join(self.root_dir, model_name)
 
-        flattened_weights = ShadowDataset.get_weights(model_path)
+        flattened_weights = ShadowDataset.get_weights(model_path, device=self.device, fcn=self.fcn, conv=self.conv)
 
         label = torch.Tensor([1.0]) if self.proportions_frame.iloc[index].male_dist > 0.7 else torch.Tensor([0.0])
 
         return flattened_weights, label
 
-    def get_weights(path, device='cpu'):
+    def get_weights(path, device='cpu', fcn=False, conv=False):
         weights = torch.Tensor().to(device)
         for k, v in torch.load(path, map_location=torch.device(device)).items():
-            weights = torch.cat((weights, v.view(-1).to(device)))
+            if fcn: # only use fully connected weights
+                if 'fc' in k:
+                    weights = torch.cat((weights, v.view(-1).to(device)))
+            elif conv: # only use weights from convolution layers
+                if 'conv' in k:
+                    weights = torch.cat((weights, v.view(-1).to(device)))
+            else: # use all the weights
+                weights = torch.cat((weights, v.view(-1).to(device)))
         return weights
 
 class SelectAttr(object):
