@@ -67,7 +67,9 @@ def get_dataloader(dataset, property, size, class_proportions=None, batch_size=6
         Elements should sum to 1.
         - batch_size: int. Number of samples contained in each batch.
     '''
-    if class_proportions is None:
+    if property is None:
+        loader = DataLoader(dataset, batch_size=batch_size, num_workers=4, pin_memory=True)
+    elif class_proportions is None:
         sampler = RandomSampler(dataset, replacement=True, num_samples=size)
         loader = DataLoader(dataset, batch_size=batch_size, sampler=sampler, num_workers=4, pin_memory=True)
     else:
@@ -87,7 +89,7 @@ def get_dataloader(dataset, property, size, class_proportions=None, batch_size=6
 
     return loader
 
-def get_dataset(property):
+def get_dataset(property, split='train'):
     transform = transforms.Compose([
         transforms.Resize(64),
         transforms.CenterCrop(64),
@@ -100,7 +102,7 @@ def get_dataset(property):
     ])
 
     # Load CelebA
-    dataset = torchvision.datasets.CelebA('../datasets/celeba/celeba-dataset/', transform=transform, target_transform=target_transform)
+    dataset = torchvision.datasets.CelebA('../datasets/celeba/celeba-dataset/', split=split, transform=transform, target_transform=target_transform)
 
     for property in SelectAttr.list_attr:
         property_index = SelectAttr.list_attr.index(property)
