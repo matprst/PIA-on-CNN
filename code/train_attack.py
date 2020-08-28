@@ -84,7 +84,7 @@ REPS = 2
 for attack in attack_models:
     for target_model in architectures:
         for rep in range(REPS):
-            shadow_dataset = datasets.ShadowDataset('./models/models.csv', './models/', split='train', architecture=str(target_model))
+            shadow_dataset = datasets.ShadowDataset('models/shadow_models/models.csv', 'models/shadow_models/', split='train', architecture=str(target_model))
             dataloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
 
             params = utils.number_param(target_model)

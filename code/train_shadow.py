@@ -63,7 +63,7 @@ def train_shadow_model(dataset, lr, hidden_attribute, class_distribution, device
     tac = time.time()
     print(f'[{epoch+1}] loss: {running_loss/(i+1):.3f} - {int(tac-tic)} sec')
 
-    # path = f'./models/{filename}.pth'
+    # path = f'models/shadow_models/{filename}.pth'
     # torch.save(net.state_dict(), path)
 
 
@@ -71,7 +71,7 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
     print(f'\nStarting training of {rep} shadow models on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('./models/models.csv')
+    df = pd.read_csv('models/shadow_models/models.csv')
     print(len(df))
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
@@ -117,13 +117,13 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
             break
 
     # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('./models/models.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
 
 def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models test on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('./models/models.csv')
+    df = pd.read_csv('models/shadow_models/models.csv')
     print(len(df))
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
@@ -169,13 +169,13 @@ def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribut
             break
 
     # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('./models/models.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
 
 def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models valid on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('./models/models.csv')
+    df = pd.read_csv('models/shadow_models/models.csv')
     print(len(df))
     for model in range(len(df), len(df) + rep, 2):
         print(model)
@@ -222,7 +222,7 @@ def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribu
             break
 
     # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('./models/models.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
 
 
 device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")

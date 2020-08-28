@@ -30,7 +30,7 @@ test_loader = datasets.get_dataloader(test_set, property=None, size=None, class_
 data_iter = iter(test_loader)
 images, labels = data_iter.next()
 
-df_models = pd.read_csv('models/models.csv', index_col=0)
+df_models = pd.read_csv('models/shadow_models/models.csv', index_col=0)
 print(df_models)
 data = {'model': [], 'architecture': [], 'accuracy': [], 'precision': [], 'recall': []}
 architecture_ids = ('a'+str(i) for i in range(1, 10))
@@ -38,7 +38,7 @@ architecture_ids = ('a'+str(i) for i in range(1, 10))
 for architecture in architecture_ids:
     df_models_architecture = df_models[df_models['architecture'] == architecture]['model'].values
     for filename in df_models_architecture:
-        path = f'./models/{filename}'
+        path = f'models/shadow_models/{filename}'
         print(path)
         model = get_model(architecture)()
         model.load_state_dict(torch.load(path, map_location=torch.device(device)))
@@ -49,5 +49,5 @@ for architecture in architecture_ids:
         data['model'].append(filename)
         data['architecture'].append(architecture)
     new_df = pd.DataFrame(data)
-    # new_df.to_csv('./models/models_perf.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/models_perf.csv', mode='a', header=False)
     data = {'model': [], 'architecture': [], 'accuracy': [], 'precision': [], 'recall': []}

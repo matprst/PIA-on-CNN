@@ -38,7 +38,7 @@ def get_attack(number):
 
 device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
 for i in range(1, 6):
-    models_files = sorted(glob.glob(f'./models/attack_models_conv/attack-{i}*.pth'))
+    models_files = sorted(glob.glob(f'models/attack_models/conv/attack-{i}*.pth'))
 
     data = {
         'model':[],
@@ -55,7 +55,7 @@ for i in range(1, 6):
         number = int(filename.split('-')[4].split('.')[0])
         print(filename, architecture, number)
         
-        shadow_dataset = datasets.ShadowDataset('./models/models.csv', './models/', split='test', architecture=architecture, fcn=False, conv=True, device=device)
+        shadow_dataset = datasets.ShadowDataset('models/shadow_models/models.csv', 'models/shadow_models/', split='test', architecture=architecture, fcn=False, conv=True, device=device)
         test_loader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
 
         params = utils.number_param(get_model(architecture)(), fcn=False, conv=True)
@@ -75,4 +75,4 @@ for i in range(1, 6):
         data['recall'].append(recall)
 
     df = pd.DataFrame(data)
-    # df.to_csv('./models/attack_models_conv/attack_models_conv.csv', mode='a', header=False)
+    # df.to_csv('models/attack_models/conv/attack_models_conv.csv', mode='a', header=False)

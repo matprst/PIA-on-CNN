@@ -113,7 +113,7 @@ def get_dataset(property, split='train'):
     ])
 
     # Load CelebA
-    dataset = torchvision.datasets.CelebA('../datasets/celeba/celeba-dataset/', split=split, transform=transform, target_transform=target_transform)
+    dataset = torchvision.datasets.CelebA('data/celeba-dataset/', split=split, transform=transform, target_transform=target_transform)
 
     for property in SelectAttr.list_attr:
         property_index = SelectAttr.list_attr.index(property)
