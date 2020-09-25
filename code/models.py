@@ -241,13 +241,20 @@ class Net10(nn.Module):
         return 'a10'
 
 class AttackNet1(nn.Module):
-    def __init__(self, in_dim=337721, out_dim=1):
+    map_activations = {
+        'relu': F.relu,
+        'tanh': torch.tanh,
+        'sigmoid': torch.sigmoid,
+    }
+
+    def __init__(self, in_dim=337721, out_dim=1, activation='relu'):
         super(AttackNet1, self).__init__()
         self.fc1 = nn.Linear(in_dim, 10)
         self.fc2 = nn.Linear(10, out_dim)
+        self.act = self.map_activations[activation]
 
     def forward(self, x):
-        x = F.relu(self.fc1(x))
+        x = self.act(self.fc1(x))
         x = self.fc2(x)
         return x
 
@@ -317,3 +324,15 @@ class AttackNet5(nn.Module):
 
     def __str__(self):
         return 'attack-5'
+
+class AttackNet6(nn.Module):
+    def __init__(self, in_dim=337721, out_dim=1):
+        super(AttackNet6, self).__init__()
+        self.fc1 = nn.Linear(in_dim, out_dim)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        return x
+
+    def __str__(self):
+        return 'attack-6'

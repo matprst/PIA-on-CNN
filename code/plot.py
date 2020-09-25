@@ -46,25 +46,25 @@ def plot_accuracies_shadows():
 
 
 def plot_accuracies_per_architecture_full():
-    df = pd.read_csv('./models/attack_models/attack_models_test.csv', index_col=0)
+    df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
     print(df)
     df['precision'] = df['precision'].replace(['//'], 1.0)
     df['precision'] = pd.to_numeric(df['precision'])
     print(df)
     # print(df.groupby(['architecture']).median())
-    # df['attack'] = df['model'].str.split('-').str[1]
+    df['attack'] = df['model'].str.split('-').str[1]
     # df['accuracy'] = df['accuracy'] * 100
-    # print(df)
+    print(df)
     # groups = df[df['attack'] == '1'].groupby(['architecture']).mean()
     # print(df)
     # print(df[df['attack'] == '1'].groupby(['architecture']).median())
     final_df = pd.DataFrame({
-        'accuracy': df.groupby(['architecture']).median().accuracy * 100 ,
-        'precision': df.groupby(['architecture']).median().precision * 100 ,
-        'recall': df.groupby(['architecture']).median().recall * 100 ,
-        'accuracy_std': df.groupby(['architecture']).std().accuracy * 100 ,
-        'precision_std': df.groupby(['architecture']).std().precision * 100 ,
-        'recall_std': df.groupby(['architecture']).std().recall * 100
+        'accuracy': df[df['attack'] == '1'].groupby(['architecture']).median().accuracy * 100 ,
+        'precision': df[df['attack'] == '1'].groupby(['architecture']).median().precision * 100 ,
+        'recall': df[df['attack'] == '1'].groupby(['architecture']).median().recall * 100 ,
+        'accuracy_std': df[df['attack'] == '1'].groupby(['architecture']).std().accuracy * 100 ,
+        'precision_std': df[df['attack'] == '1'].groupby(['architecture']).std().precision * 100 ,
+        'recall_std': df[df['attack'] == '1'].groupby(['architecture']).std().recall * 100
     })
     print(final_df)
 
@@ -128,7 +128,7 @@ def plot_accuracies_per_architecture_conv():
     plt.show()
 
 def plot_accuracies_per_weights():
-    df = pd.read_csv('./models/attack_models/attack_models_test.csv', index_col=0)
+    df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
     df['attack'] = df['model'].str.split('-').str[1]
     df['accuracy'] = df['accuracy'] * 100
     print(df)
@@ -165,17 +165,18 @@ def plot_accuracies_per_weights():
     plt.show()
 
 def plot_accuracies():
-    df = pd.read_csv('./models/attack_models/attack_models_test.csv', index_col=0)
-    df_fcn = pd.read_csv('./models/attack_models_fcn/attack_models_fcn.csv', index_col=0)
-    df_conv = pd.read_csv('./models/attack_models_conv/attack_models_conv.csv', index_col=0)
-    print(df.groupby(['architecture']).mean().accuracy)
+    df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
+    df['attack'] = df['model'].str.split('-').str[1]
+    df_fcn = pd.read_csv('./models/attack_models/fcn/attack_models_fcn.csv', index_col=0)
+    df_conv = pd.read_csv('./models/attack_models/conv/attack_models_conv.csv', index_col=0)
+    print(df[df['attack'] == '1'].groupby(['architecture']).mean().accuracy)
     print(df_fcn.groupby(['architecture']).mean().accuracy)
     print(df_conv.groupby(['architecture']).mean().accuracy)
     final_df = pd.DataFrame({
-        'full': df.groupby(['architecture']).median().accuracy * 100,
+        'full': df[df['attack'] == '1'].groupby(['architecture']).median().accuracy * 100,
         'fcn': df_fcn.groupby(['architecture']).median().accuracy * 100,
         'conv': df_conv.groupby(['architecture']).median().accuracy * 100,
-        'full_std': df.groupby(['architecture']).std().accuracy * 100,
+        'full_std': df[df['attack'] == '1'].groupby(['architecture']).std().accuracy * 100,
         'fcn_std': df_fcn.groupby(['architecture']).std().accuracy * 100,
         'conv_std': df_conv.groupby(['architecture']).std().accuracy * 100
     })
@@ -205,7 +206,7 @@ def plot_accuracies():
     plt.show()
 
 def plot_accuracies_attacks():
-    df = pd.read_csv('./models/attack_models/attack_models.csv', index_col=0)
+    df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
     df['attack'] = df['model'].str.split('-').str[1]
     # print(df['model'].str.split('-').str[1])
     df = df[df['attack']<='3'][['attack', 'architecture', 'accuracy']]
@@ -255,7 +256,6 @@ def plot_accuracies_attacks():
 # plot_accuracies_per_architecture_full()
 # plot_accuracies_per_architecture_fcn()
 # plot_accuracies_shadows()
-# plot_accuracies()
-# plot_accuracies_per_architecture_full()
+plot_accuracies()
+plot_accuracies_per_architecture_full()
 # plot_accuracies_per_weights()
-plot_accuracies_attacks()

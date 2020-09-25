@@ -56,9 +56,9 @@ def evaluate(dataloader, net, device):
     else: precision = '//'
     recall = total_tp / (total_tp + total_fn)
     accuracy = (total_tp + total_tn) / (total_tp + total_tn + total_fp + total_fn)
-    print(f'\tAccuracy: {accuracy} %')
-    print(f'\tPrecision: {precision} %')
-    print(f'\tRecall: {recall} %')
+    # print(f'\tAccuracy: {accuracy} %')
+    # print(f'\tPrecision: {precision} %')
+    # print(f'\tRecall: {recall} %')
     return accuracy, precision, recall
 
 def number_param(model, fcn=False, conv=False):
