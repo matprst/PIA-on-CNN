@@ -1,4 +1,18 @@
 import torch
+import models
+
+TYPES_OF_MODEL = {
+        "a1": models.Net1(),
+        "a2": models.Net2(),
+        "a3": models.Net3(),
+        "a4": models.Net4(),
+        "a5": models.Net5(),
+        "a6": models.Net6(),
+        "a7": models.Net7(),
+        "a8": models.Net8(),
+        "a9": models.Net9(),
+        "a10": models.Net10(),
+    }
 
 def get_eval_metrics(predicted, actual):
     '''
@@ -21,6 +35,14 @@ def get_eval_metrics(predicted, actual):
             elif a == 0:
                 tn += 1
     return tp, tn, fp, fn
+
+def get_model(model_type):
+    '''
+    Return a pytorch module corresponding to the model_type string.
+    '''
+    assert model_type in TYPES_OF_MODEL, "wrong model type"
+    return TYPES_OF_MODEL[model_type]
+
 
 def evaluate(dataloader, net, device):
     '''
@@ -56,9 +78,9 @@ def evaluate(dataloader, net, device):
     else: precision = '//'
     recall = total_tp / (total_tp + total_fn)
     accuracy = (total_tp + total_tn) / (total_tp + total_tn + total_fp + total_fn)
-    print(f'\tAccuracy: {accuracy} %')
-    print(f'\tPrecision: {precision} %')
-    print(f'\tRecall: {recall} %')
+    # print(f'\tAccuracy: {accuracy} %')
+    # print(f'\tPrecision: {precision} %')
+    # print(f'\tRecall: {recall} %')
     return accuracy, precision, recall
 
 def number_param(model, fcn=False, conv=False):

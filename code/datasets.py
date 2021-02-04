@@ -19,7 +19,7 @@ class ShadowDataset(Dataset):
 
         self.proportions_frame = df.set_index(pd.Index(range(0, len(df))))
 
-        print('training set size:', len(self.proportions_frame))
+        # print('dataset size:', len(self.proportions_frame))
         self.root_dir = root_dir
 
         self.fcn = fcn # only use the weights of the linear layers

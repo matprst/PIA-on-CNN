@@ -20,13 +20,12 @@ import datasets
 import sys
 
 import models
+import utils
 
 
-EPOCHS = 1
-
-def train_shadow_model(dataset, lr, hidden_attribute, class_distribution, device, size=2000, filename='test'):
+def train_shadow_model(dataset, model_type, lr, hidden_attribute, class_distribution, device, size=2000, filename='test'):
     dataloader = datasets.get_dataloader(dataset, hidden_attribute, size, class_distribution)
-    net = models.Net10().to(device)
+    net = utils.get_model(model_type).to(device)
 
     tic = time.time()
     criterion = nn.MSELoss(reduction='sum')
@@ -63,16 +62,18 @@ def train_shadow_model(dataset, lr, hidden_attribute, class_distribution, device
     tac = time.time()
     print(f'[{epoch+1}] loss: {running_loss/(i+1):.3f} - {int(tac-tic)} sec')
 
-    # path = f'models/shadow_models/{filename}.pth'
-    # torch.save(net.state_dict(), path)
+    # path = f'models/test/{filename}.pth'
+    path = f'models/shadow_models/eyeglasses/{filename}.pth'
+    torch.save(net.state_dict(), path)
 
 
-def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models on {device} - lr={lr}')
-    threshold = 70
-    data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('models/shadow_models/models.csv')
-    print(len(df))
+    threshold = 70 #70%
+    data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
+    # df = pd.read_csv('models/test/models.csv')
+    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
         p_true = np.random.randint(threshold, 101)
@@ -85,6 +86,7 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -92,9 +94,9 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_true/100)
+            data['glasses_dist'].append(p_true/100)
             data['split'].append(0)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
@@ -103,6 +105,7 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -110,21 +113,21 @@ def train_shadow_models(dataset, device, rep=1500, lr=0.001, hidden_attribute='M
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_false/100)
+            data['glasses_dist'].append(p_false/100)
             data['split'].append(0)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
-    # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
+    new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
+    # new_df.to_csv('models/test/models.csv', mode='a', header=False)
+    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
 
-def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_test(dataset, model_type, device, rep=200, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models test on {device} - lr={lr}')
     threshold = 70
-    data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('models/shadow_models/models.csv')
-    print(len(df))
+    data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
+    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
         p_true = np.random.randint(threshold, 101)
@@ -137,6 +140,7 @@ def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribut
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -144,9 +148,9 @@ def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribut
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_true/100)
+            data['glasses_dist'].append(p_true/100)
             data['split'].append(1)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
@@ -155,6 +159,7 @@ def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribut
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -162,20 +167,20 @@ def train_shadow_models_test(dataset, device, rep=200, lr=0.001, hidden_attribut
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_false/100)
+            data['glasses_dist'].append(p_false/100)
             data['split'].append(1)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
-    # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
+    new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
+    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
 
-def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_valid(dataset, model_type, device, rep=100, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models valid on {device} - lr={lr}')
     threshold = 70
-    data = {'model': [], 'male_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('models/shadow_models/models.csv')
+    data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
+    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
     print(len(df))
     for model in range(len(df), len(df) + rep, 2):
         print(model)
@@ -190,6 +195,7 @@ def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribu
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -197,9 +203,9 @@ def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribu
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_true/100)
+            data['glasses_dist'].append(p_true/100)
             data['split'].append(2)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
@@ -208,6 +214,7 @@ def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribu
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
+                               model_type=model_type,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -215,24 +222,44 @@ def train_shadow_models_valid(dataset, device, rep=100, lr=0.001, hidden_attribu
                                size=2000,
                                filename=filename)
             data['model'].append(f'{filename}.pth')
-            data['male_dist'].append(p_false/100)
+            data['glasses_dist'].append(p_false/100)
             data['split'].append(2)
-            data['architecture'].append('a10')
+            data['architecture'].append(model_type)
         except:
             break
 
-    # new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    # new_df.to_csv('models/shadow_models/models.csv', mode='a', header=False)
+    new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
+    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
 
 
-device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
-print(device)
+def main():
+    import argparse
 
-target_attribute = 'Mouth_Slightly_Open'
-hidden_attribute = 'Male'
-dataset = datasets.get_dataset(target_attribute)
-# dataloader = datasets.get_dataloader(dataset, hidden_attribute, 2000, np.array([0.5, 0.5]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--models", nargs="+")
 
-train_shadow_models(dataset, device, rep=2, lr=0.001, hidden_attribute='Male')
-train_shadow_models_test(dataset, device, rep=2, lr=0.001, hidden_attribute='Male')
-train_shadow_models_valid(dataset, device, rep=2, lr=0.001, hidden_attribute='Male')
+    args = parser.parse_args()
+
+    EPOCHS = 30
+
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+
+    target_attribute = 'Male'
+    hidden_attribute = 'Eyeglasses'
+    dataset = datasets.get_dataset(target_attribute)
+
+    # models = [f"a{i}" for i in range(2, 10)]
+    models = args.models
+    assert all(model in utils.TYPES_OF_MODEL for model in models)
+
+    for model_t in models:
+        print("---- Architecture", model_t, " ----")
+        train_shadow_models(dataset, model_t, device, rep=1500, lr=0.001, hidden_attribute='Male')
+        train_shadow_models_test(dataset, model_t, device, rep=200, lr=0.001, hidden_attribute='Male')
+        # train_shadow_models_valid(dataset, model_t, device, rep=2, lr=0.001, hidden_attribute='Male')
+
+
+
+if __name__ == "__main__":
+    main()
+
