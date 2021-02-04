@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from pylab import rcParams
+rcParams['figure.figsize'] = 13, 8
+
 # df = pd.read_csv('./models/attack_models/attack_models_test.csv', index_col=0)
 # architectures = sorted(list(set(df[['architecture', 'num_param']].itertuples(index=False))), key=lambda x: x.num_param)
 # print(architectures)
@@ -42,6 +45,7 @@ def plot_accuracies_shadows():
     plt.xlabel('shadow model architecture')
     plt.title('Perf of shadow models')
     plt.ylim(0, 100)
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
 
 
@@ -73,19 +77,20 @@ def plot_accuracies_per_architecture_full():
     # print(groups)
     # print(groups.accuracy)
     # ax = groups.accuracy.plot(kind='bar', color='#1a9988')
-    ax = final_df[['accuracy', 'precision', 'recall']].plot(kind='bar', color=['#1a9988', '#eb5600', '#6aa4c8'], yerr=final_df[['accuracy_std', 'precision_std', 'recall_std']].values.T, capsize=4, zorder=3)
+    ax = final_df[['accuracy', 'precision', 'recall']].plot(kind='bar', color=['#636363', '#f0f0f0', '#bdbdbd'], edgecolor='black', yerr=final_df[['accuracy_std', 'precision_std', 'recall_std']].values.T, capsize=4, zorder=3)
     ax.grid(axis='y', zorder=0)
 
     # for p in ax.patches:
     #     ax.annotate(f'{int(p.get_height())}', (p.get_x() * 1.005, p.get_height() * 1.005))
-    fontsize=20
-    plt.ylabel('Metric (%)', fontsize=fontsize)
-    plt.xlabel('shadow model architecture', fontsize=fontsize)
+    fontsize=25
+    plt.ylabel('metric (%)', fontsize=fontsize)
+    plt.xlabel('Target model architecture', fontsize=fontsize)
     plt.title('Attacks Performances', fontsize=fontsize)
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
     plt.ylim(0, 100)
     ax.legend(fontsize=fontsize)
-    plt.show()
+    plt.savefig('test2.png', bbox_inches='tight', pad_inches=0, dpi = 400)
+    # plt.show()
 
 def plot_accuracies_per_architecture_fcn():
     df = pd.read_csv('./models/attack_models_fcn/attack_models_fcn.csv', index_col=0)
@@ -105,6 +110,7 @@ def plot_accuracies_per_architecture_fcn():
     plt.xlabel('shadow model architecture')
     plt.title('Only fcn')
     plt.ylim(0, 100)
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
 
 def plot_accuracies_per_architecture_conv():
@@ -125,6 +131,7 @@ def plot_accuracies_per_architecture_conv():
     plt.xlabel('shadow model architecture')
     plt.title('Only conv')
     plt.ylim(0, 100)
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
 
 def plot_accuracies_per_weights():
@@ -142,27 +149,27 @@ def plot_accuracies_per_weights():
     df = groups.accuracy.to_frame()
     df.reset_index(inplace=True)
     df.columns = ['weights','accuracy']
-    ax = df.plot(kind='scatter',x='weights',y='accuracy', logx=True, s=600, marker='.', c='#1a9988')
+    ax = df.plot(kind='scatter',x='weights',y='accuracy', logx=True, s=600, marker='.', c='#636363')
     ax.grid()
 
     z = df['weights'].values
     print(z)
     y = df['accuracy'].values
     print(y)
-    fontsize = 20
+    fontsize = 25
     for i, txt in enumerate(y):
-        ax.annotate(f'{txt:.1f}', (z[i]+1, y[i]+3), fontsize=fontsize)
+        ax.annotate(f'{txt:.1f}', (z[i]+1, y[i]+3), fontsize=fontsize-9)
 
     for p in ax.patches:
         ax.annotate(f'{int(p.get_height())}', (p.get_x() * 1.005, p.get_height() * 1.005))
     plt.ylabel('accuracy (%)', fontsize=fontsize)
     plt.ylim(0, 100)
     plt.xlim(1000, 1000000)
-    plt.xlabel('Number of weights in shadow model architecture', fontsize=fontsize)
+    plt.xlabel('Number of weights in target model architecture', fontsize=fontsize)
     plt.title('Number of parameters influence', fontsize=fontsize)
-    ax.tick_params(axis='both', which='major', labelsize=fontsize)
-
-    plt.show()
+    ax.tick_params(axis='both', which='major', labelsize=fontsize-3)
+    plt.savefig('test3.png', bbox_inches='tight', pad_inches=0, dpi = 400)
+    # plt.show()
 
 def plot_accuracies():
     df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
@@ -192,18 +199,20 @@ def plot_accuracies():
     # print(plt.plot(groups.loc['1'].accuracy))
     # print(groups)
     # print(groups.accuracy)
-    ax = final_df[['full', 'fcn', 'conv']].plot(kind='bar', color=['#1a9988', '#eb5600', '#6aa4c8'], yerr=final_df[['full_std', 'fcn_std', 'conv_std']].values.T, capsize=4, zorder=3)
+    ax = final_df[['full', 'fcn', 'conv']].plot(kind='bar', color=['#636363', '#f0f0f0', '#bdbdbd'], edgecolor='black', yerr=final_df[['full_std', 'fcn_std', 'conv_std']].values.T, capsize=4, zorder=3)
     ax.grid(axis='y', zorder=0)
     # for p in ax.patches:
     #     ax.annotate(f'{int(p.get_height())}', (p.get_x() - .01, p.get_height() - .01), fontsize=15)
-    fontsize = 20
+    fontsize = 25
     plt.ylabel('accuracy (%)', fontsize=fontsize)
-    plt.xlabel('shadow model architecture', fontsize=fontsize)
+    plt.xlabel('Target model architecture', fontsize=fontsize)
     ax.tick_params(axis='both', which='major', labelsize=fontsize)
     plt.title('Convolution vs FCN layers', fontsize=fontsize)
     plt.ylim(0, 100)
     plt.legend(fontsize=fontsize)
-    plt.show()
+    # plt.tight_layout(pad=0, w_pad=0, h_pad=0)
+    # plt.show()
+    plt.savefig('test.png', bbox_inches='tight', pad_inches=0, dpi = 400)
 
 def plot_accuracies_attacks():
     df = pd.read_csv('./models/attack_models/full/attack_models.csv', index_col=0)
@@ -258,4 +267,4 @@ def plot_accuracies_attacks():
 # plot_accuracies_shadows()
 plot_accuracies()
 plot_accuracies_per_architecture_full()
-# plot_accuracies_per_weights()
+plot_accuracies_per_weights()
