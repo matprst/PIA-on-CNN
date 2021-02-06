@@ -22,8 +22,9 @@ import sys
 import models
 import utils
 
+import traceback
 
-def train_shadow_model(dataset, model_type, lr, hidden_attribute, class_distribution, device, size=2000, filename='test'):
+def train_shadow_model(dataset, model_type, epochs, lr, hidden_attribute, class_distribution, device, size=2000, filename='test'):
     dataloader = datasets.get_dataloader(dataset, hidden_attribute, size, class_distribution)
     net = utils.get_model(model_type).to(device)
 
@@ -34,7 +35,7 @@ def train_shadow_model(dataset, model_type, lr, hidden_attribute, class_distribu
     losses = []
     sum_0 = 0
     sum_1 = 0
-    for epoch in range(EPOCHS):
+    for epoch in range(epochs):
         running_loss = 0
         for i, data in enumerate(dataloader, 0):
             inputs, labels = data
@@ -67,7 +68,7 @@ def train_shadow_model(dataset, model_type, lr, hidden_attribute, class_distribu
     torch.save(net.state_dict(), path)
 
 
-def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models(dataset, model_type, epochs, device, rep=1500, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models on {device} - lr={lr}')
     threshold = 70 #70%
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
@@ -87,6 +88,7 @@ def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -98,6 +100,7 @@ def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_
             data['split'].append(0)
             data['architecture'].append(model_type)
         except:
+            traceback.print_exc(file=sys.stdout)
             break
 
         try:
@@ -106,6 +109,7 @@ def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -117,13 +121,14 @@ def train_shadow_models(dataset, model_type, device, rep=1500, lr=0.001, hidden_
             data['split'].append(0)
             data['architecture'].append(model_type)
         except:
+            traceback.print_exc(file=sys.stdout)
             break
 
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
     # new_df.to_csv('models/test/models.csv', mode='a', header=False)
     new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
 
-def train_shadow_models_test(dataset, model_type, device, rep=200, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_test(dataset, model_type, epochs, device, rep=200, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models test on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
@@ -141,6 +146,7 @@ def train_shadow_models_test(dataset, model_type, device, rep=200, lr=0.001, hid
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -160,6 +166,7 @@ def train_shadow_models_test(dataset, model_type, device, rep=200, lr=0.001, hid
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -176,7 +183,7 @@ def train_shadow_models_test(dataset, model_type, device, rep=200, lr=0.001, hid
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
     new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
 
-def train_shadow_models_valid(dataset, model_type, device, rep=100, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_valid(dataset, model_type, epochs, device, rep=100, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models valid on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
@@ -196,6 +203,7 @@ def train_shadow_models_valid(dataset, model_type, device, rep=100, lr=0.001, hi
             filename = f'{model}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -215,6 +223,7 @@ def train_shadow_models_valid(dataset, model_type, device, rep=100, lr=0.001, hi
             filename = f'{model+1}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
+                               epochs=epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -254,9 +263,9 @@ def main():
 
     for model_t in models:
         print("---- Architecture", model_t, " ----")
-        train_shadow_models(dataset, model_t, device, rep=1500, lr=0.001, hidden_attribute='Male')
-        train_shadow_models_test(dataset, model_t, device, rep=200, lr=0.001, hidden_attribute='Male')
-        # train_shadow_models_valid(dataset, model_t, device, rep=2, lr=0.001, hidden_attribute='Male')
+        train_shadow_models(dataset, model_t, EPOCHS, device, rep=1500, lr=0.001, hidden_attribute='Male')
+        train_shadow_models_test(dataset, model_t, EPOCHS, device, rep=200, lr=0.001, hidden_attribute='Male')
+        # train_shadow_models_valid(dataset, model_t, EPOCHS, device, rep=2, lr=0.001, hidden_attribute='Male')
 
 
 
