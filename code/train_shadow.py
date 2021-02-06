@@ -33,17 +33,10 @@ def train_shadow_model(dataset, model_type, epochs, lr, hidden_attribute, class_
     optimizer = optim.Adam(net.parameters(), lr=lr)
 
     losses = []
-    sum_0 = 0
-    sum_1 = 0
     for epoch in range(epochs):
         running_loss = 0
         for i, data in enumerate(dataloader, 0):
             inputs, labels = data
-
-            total_0 = (labels == 0).sum()
-            total_1 = (labels == 1).sum()
-            sum_0 += total_0
-            sum_1 += total_1
 
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -68,12 +61,13 @@ def train_shadow_model(dataset, model_type, epochs, lr, hidden_attribute, class_
     torch.save(net.state_dict(), path)
 
 
-def train_shadow_models(dataset, model_type, epochs, device, rep=1500, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models(dataset, model_type, args, device, rep=1500, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models on {device} - lr={lr}')
     threshold = 70 #70%
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
     # df = pd.read_csv('models/test/models.csv')
-    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+    # df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+    df = pd.read_csv(args.csv)
 
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
@@ -85,10 +79,10 @@ def train_shadow_models(dataset, model_type, epochs, device, rep=1500, lr=0.001,
         try:
             # Train model with property p
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
-            filename = f'{model}'
+            filename = f'{model+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -106,10 +100,10 @@ def train_shadow_models(dataset, model_type, epochs, device, rep=1500, lr=0.001,
         try:
             # Train model without property p
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
-            filename = f'{model+1}'
+            filename = f'{model+1+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -126,13 +120,15 @@ def train_shadow_models(dataset, model_type, epochs, device, rep=1500, lr=0.001,
 
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
     # new_df.to_csv('models/test/models.csv', mode='a', header=False)
-    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    new_df.to_csv(args.csv, mode='a', header=False)
 
-def train_shadow_models_test(dataset, model_type, epochs, device, rep=200, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_test(dataset, model_type, args, device, rep=200, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models test on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+    # df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+    df = pd.read_csv(args.csv)
     for model in range(len(df), len(df) + rep, 2):
         # target property p is whether dataset is composed of more than 70% of male images
         p_true = np.random.randint(threshold, 101)
@@ -143,10 +139,10 @@ def train_shadow_models_test(dataset, model_type, epochs, device, rep=200, lr=0.
         try:
             # Train model with property p
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
-            filename = f'{model}'
+            filename = f'{model+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -163,10 +159,10 @@ def train_shadow_models_test(dataset, model_type, epochs, device, rep=200, lr=0.
         try:
             # Train model without property p
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
-            filename = f'{model+1}'
+            filename = f'{model+1+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -181,16 +177,17 @@ def train_shadow_models_test(dataset, model_type, epochs, device, rep=200, lr=0.
             break
 
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    new_df.to_csv(args.csv, mode='a', header=False)
 
-def train_shadow_models_valid(dataset, model_type, epochs, device, rep=100, lr=0.001, hidden_attribute='Male'):
+def train_shadow_models_valid(dataset, model_type, args, device, rep=100, lr=0.001, hidden_attribute='Male'):
     print(f'\nStarting training of {rep} shadow models valid on {device} - lr={lr}')
     threshold = 70
     data = {'model': [], 'glasses_dist': [], 'split': [], 'architecture': []}
-    df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
-    print(len(df))
+    # df = pd.read_csv('models/shadow_models/eyeglasses/models-glasses.csv')
+    df = pd.read_csv(args.csv)
+
     for model in range(len(df), len(df) + rep, 2):
-        print(model)
         # target property p is whether dataset is composed of more than 70% of male images
         p_true = np.random.randint(threshold, 101)
         p_false = np.random.randint(0, threshold)
@@ -200,10 +197,10 @@ def train_shadow_models_valid(dataset, model_type, epochs, device, rep=100, lr=0
         try:
             # Train model with property p
             print(f'{model} - p=True - d={p_true_distribution} - Training...')
-            filename = f'{model}'
+            filename = f'{model+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_true_distribution,
@@ -220,10 +217,10 @@ def train_shadow_models_valid(dataset, model_type, epochs, device, rep=100, lr=0
         try:
             # Train model without property p
             print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
-            filename = f'{model+1}'
+            filename = f'{model+1+args.start_from}'
             train_shadow_model(dataset=dataset,
                                model_type=model_type,
-                               epochs=epochs,
+                               epochs=args.epochs,
                                lr=lr,
                                hidden_attribute=hidden_attribute,
                                class_distribution=p_false_distribution,
@@ -238,34 +235,36 @@ def train_shadow_models_valid(dataset, model_type, epochs, device, rep=100, lr=0
             break
 
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    # new_df.to_csv('models/shadow_models/eyeglasses/models-glasses.csv', mode='a', header=False)
+    new_df.to_csv(args.csv, mode='a', header=False)
 
 
 def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--models", nargs="+")
+    parser.add_argument("--models", nargs="+", help="space separated list of model architectures")
+    parser.add_argument("--csv", type=str, default="models.csv", help="path to csv files to store info about shadow models")
+    parser.add_argument("--start_from", type=int, default=0, help="index to start from when naming the shadow models")
+    parser.add_argument("--epochs", type=int, default=30, help="number of training epochs")
+
 
     args = parser.parse_args()
 
-    EPOCHS = 30
-
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
 
-    target_attribute = 'Male'
+    attribute = 'Male'
     hidden_attribute = 'Eyeglasses'
-    dataset = datasets.get_dataset(target_attribute)
+    dataset = datasets.get_dataset(attribute)
 
-    # models = [f"a{i}" for i in range(2, 10)]
     models = args.models
     assert all(model in utils.TYPES_OF_MODEL for model in models)
 
     for model_t in models:
         print("---- Architecture", model_t, " ----")
-        train_shadow_models(dataset, model_t, EPOCHS, device, rep=1500, lr=0.001, hidden_attribute='Male')
-        train_shadow_models_test(dataset, model_t, EPOCHS, device, rep=200, lr=0.001, hidden_attribute='Male')
-        # train_shadow_models_valid(dataset, model_t, EPOCHS, device, rep=2, lr=0.001, hidden_attribute='Male')
+        train_shadow_models(dataset, model_t, args, device, rep=1500, lr=0.001, hidden_attribute=hidden_attribute)
+        train_shadow_models_test(dataset, model_t, args, device, rep=200, lr=0.001, hidden_attribute=hidden_attribute)
+        train_shadow_models_valid(dataset, model_t, args, device, rep=100, lr=0.001, hidden_attribute=hidden_attribute)
 
 
 
