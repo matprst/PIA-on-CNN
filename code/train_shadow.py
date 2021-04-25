@@ -1,18 +1,15 @@
 import time
 import matplotlib.pyplot as plt
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
 import pandas as pd
+import os
 
 import datasets
 import models
 import utils
-
-import os
 
 def train_shadow_model(dataset, model_type, args, epochs, lr, hidden_attribute, class_distribution, device, size=2000, filename='test'):
     dataloader = datasets.get_dataloader(dataset, hidden_attribute, size, class_distribution)

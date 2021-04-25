@@ -1,26 +1,8 @@
 import torch
-
 import pandas as pd
-
-import models
 import datasets
 import utils
 import os
-
-
-def get_model(architecture):
-    architectures = {
-        'a1': models.Net1,
-        'a2': models.Net2,
-        'a3': models.Net3,
-        'a4': models.Net4,
-        'a5': models.Net5,
-        'a6': models.Net6,
-        'a7': models.Net7,
-        'a8': models.Net8,
-        'a9': models.Net9
-    }
-    return architectures[architecture]
 
 def evaluate_all_models(input_file, models_dir, results_file, device):
     attribute = 'Mouth_Slightly_Open'
