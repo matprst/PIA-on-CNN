@@ -1,38 +1,45 @@
 # Property Inference Attacks on Convolutional Neural Networks:Influence and Implications of Target Model’s Complexity
+Authors: Mathias Parisot, Balazs Pejo, and Dayana Spagnuelo
 
-This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345). 
 
->📋  Optional: include a graphic explaining your approach/main result, bibtex entry, link to demos, blog posts and tutorials
+This repository is the official implementation of [Property Inference Attacks on Convolutional Neural Networks:Influence and Implications of Target Model’s Complexity](https://arxiv.org/abs/2030.12345). 
 
 ## Requirements
 
-To install the dependencies:
+This repository was tested using Python 3 only, please make sure not to use Python 2. To install the dependencies:
 
 ```setup
 pip install -r requirements.txt
 ```
 
+In case you want to train and evaluate the shadow models, you will also need to download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). Please refer to their webpage for the instructions.
+
 ## Training
 
-To train the model(s) in the paper, run this command:
+To train the shadow models (architecture 1, 2, 3, and 4 from the paper), run this command:
 
 ```train
-python train.py --input-data <path_to_data> --alpha 10 --beta 20
+python train_shadow.py --models a1 a2 a3 a4 --csv template_output.csv 
 ```
 
->📋  Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters.
+To train the attack models, run this command:
+
+```train
+python train_attack.py --csv template_output.csv 
+```
+
+For more specific parameters, please check the command line arguments of the respective files.
 
 ## Evaluation
 
-To evaluate my model on ImageNet, run:
+After training the shadow models, you can evaluate their performance on [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) by running:
 
 ```eval
-python eval.py --model-file mymodel.pth --benchmark imagenet
+python test_shadow.py --shadow_csv template_output.csv
 ```
 
->📋  Describe how to evaluate the trained models on benchmarks reported in the paper, give commands that produce the results (section below).
+After training the attack models, you can evaluate their performance on the shadow model test dataset by running:
 
-## Results
-
->📋  Include a table of results from your paper, and link back to the leaderboard for clarity and context. If your main result is a figure, include that figure and link to the command or notebook to reproduce it. 
-
+```eval
+python test_attack.py --csv template_output.csv
+```
