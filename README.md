@@ -2,7 +2,7 @@
 Authors: Mathias Parisot, Balazs Pejo, and Dayana Spagnuelo
 
 
-This repository is the official implementation of [Property Inference Attacks on Convolutional Neural Networks:Influence and Implications of Target Model’s Complexity](https://arxiv.org/abs/2030.12345). 
+This repository is the official implementation of [Property Inference Attacks on Convolutional Neural Networks:Influence and Implications of Target Model’s Complexity](https://arxiv.org/abs/2104.13061). 
 
 ## Requirements
 
