@@ -73,51 +73,48 @@ def train_shadow_models(dataset, model_type, args, device, rep=1500, lr=0.001, h
         p_true_distribution = np.array([100-p_true, p_true])/100
         p_false_distribution = np.array([100-p_false, p_false])/100
 
-        try: # try statements to allow training-interuption and still save the results
-            # Train model with property p
-            print(f'{model} - p=True - d={p_true_distribution} - Training...')
-            filename = f'{model+args.start_from}'
-            train_shadow_model(dataset=dataset,
-                               model_type=model_type,
-                               args=args,
-                               epochs=args.epochs,
-                               lr=lr,
-                               hidden_attribute=hidden_attribute,
-                               class_distribution=p_true_distribution,
-                               device=device,
-                               size=2000,
-                               filename=filename)
-            data['model'].append(f'{filename}.pth')
-            data['property_dist'].append(p_true/100)
-            data['split'].append(split_code)
-            data['architecture'].append(model_type)
-        except:
-            break
-
-        try:
-            # Train model without property p
-            print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
-            filename = f'{model+1+args.start_from}'
-            train_shadow_model(dataset=dataset,
-                               model_type=model_type,
-                               args=args,
-                               epochs=args.epochs,
-                               lr=lr,
-                               hidden_attribute=hidden_attribute,
-                               class_distribution=p_false_distribution,
-                               device=device,
-                               size=2000,
-                               filename=filename)
-            data['model'].append(f'{filename}.pth')
-            data['property_dist'].append(p_false/100)
-            data['split'].append(split_code)
-            data['architecture'].append(model_type)
-        except:
-            break
+        # Train model with property p
+        print(f'{model} - p=True - d={p_true_distribution} - Training...')
+        filename = f'{model+args.start_from}'
+        train_shadow_model(dataset=dataset,
+                            model_type=model_type,
+                            args=args,
+                            epochs=args.epochs,
+                            lr=lr,
+                            hidden_attribute=hidden_attribute,
+                            class_distribution=p_true_distribution,
+                            device=device,
+                            size=2000,
+                            filename=filename)
+        data['model'].append(f'{filename}.pth')
+        data['property_dist'].append(p_true/100)
+        data['split'].append(split_code)
+        data['architecture'].append(model_type)
+        
+        # Train model without property p
+        print(f'{model+1} - p=False - d={p_false_distribution} - Training...')
+        filename = f'{model+1+args.start_from}'
+        train_shadow_model(dataset=dataset,
+                            model_type=model_type,
+                            args=args,
+                            epochs=args.epochs,
+                            lr=lr,
+                            hidden_attribute=hidden_attribute,
+                            class_distribution=p_false_distribution,
+                            device=device,
+                            size=2000,
+                            filename=filename)
+        data['model'].append(f'{filename}.pth')
+        data['property_dist'].append(p_false/100)
+        data['split'].append(split_code)
+        data['architecture'].append(model_type)
 
     new_df = pd.DataFrame(data).set_index(pd.Index(range(len(df), len(df)+len(data['model']))))
-    new_df.to_csv(args.csv, mode='a', header=True)
 
+    if not os.path.isfile(args.csv):
+        new_df.to_csv(args.csv, mode='a', header=True)
+    else:
+        new_df.to_csv(args.csv, mode='a', header=False)
 
 def main():
     import argparse

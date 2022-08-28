@@ -35,7 +35,7 @@ class ShadowDataset(Dataset):
 
         flattened_weights = ShadowDataset.get_weights(model_path, device=self.device, fcn=self.fcn, conv=self.conv)
 
-        label = torch.Tensor([1.0]) if self.proportions_frame.iloc[index].male_dist > 0.7 else torch.Tensor([0.0])
+        label = torch.Tensor([1.0]) if self.proportions_frame.iloc[index].property_dist > 0.7 else torch.Tensor([0.0])
 
         return flattened_weights, label
 

@@ -2,6 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import DataLoader
 
 import datasets
 import models
@@ -59,13 +60,14 @@ def train_all_attacks(args, device):
         for target_model in architectures:
             for rep in range(args.reps):
                 shadow_dataset = datasets.ShadowDataset(args.csv, args.shadow_models_dir, split='train', architecture=str(target_model))
-                dataloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
+                if len(shadow_dataset) > 0:
+                    dataloader = DataLoader(shadow_dataset, batch_size=32, shuffle=True)
 
-                params = utils.number_param(target_model)
-                attack_model = attack(in_dim=params).to(device)
-                filename = f'{attack_model}-{target_model}-{rep}'
-                print(filename)
-                train_attack(dataloader, attack_model, args=args, device=device, filename=filename)
+                    params = utils.number_param(target_model)
+                    attack_model = attack(in_dim=params).to(device)
+                    filename = f'{attack_model}-{target_model}-{rep}'
+                    print(filename)
+                    train_attack(dataloader, attack_model, args=args, device=device, filename=filename)
 
 
 
@@ -84,7 +86,7 @@ def main():
     args = parser.parse_args()
 
 
-    device = torch.device("cuda:0" if args.cuda else "cpu"))
+    device = torch.device("cuda:0" if args.cuda else "cpu")
     train_all_attacks(args, device)
 
 
