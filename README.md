@@ -12,7 +12,33 @@ This repository was tested using Python 3 only, please make sure not to use Pyth
 pip install -r requirements.txt
 ```
 
-In case you want to train and evaluate the shadow models, you will also need to download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). Please refer to their webpage for the instructions.
+## Downloading CelebA
+
+In case you want to train and evaluate the shadow models, you will also need to download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). For some reasons, downloading CelebA via Pytorch didn't work, so here is how to download CelebA manualy:
+
+- on the CelebA [webpage](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), got to their Google drive directory. The disposition of the directory is as follow:
+```
+Img/
+Anno/
+Eval/
+README.txt```
+
+- go to `Img/` and download the zip file `img_align_celeba.zip`
+- go to `Ano/` and download all the `.txt` files, there should be 5
+- go to `Eval/` and doanload `list_eval_partition.txt`
+- Move all the downloaded files into `data/celeba` and extract `img_align_celeba.zip`. After that, `data/celeba` should look as follow:
+```
+img_align_celeba/
+identity_CelebA.txt
+img_align_celeba.zip
+list_attr_celeba.txt
+list_bbox_celeba.txt
+list_eval_partition.txt
+list_landmarks_align_celeba.txt
+list_landmarks_celeba.txt
+```
+
+Once this is done, you can follow the next sections to train and test the shadow and attack models.
 
 ## Training
 
