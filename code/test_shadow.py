@@ -46,7 +46,7 @@ def evaluate_all_models(input_file, models_dir, results_file, device):
         # Save results
         new_df = pd.DataFrame(data)
         print(new_df)
-        new_df.to_csv(results_file, mode='a', header=False)
+        new_df.to_csv(results_file, mode='a', header=True)
         data = {'model': [], 'architecture': [], 'accuracy_train': [], 'precision_train': [], 'recall_train': [], 'accuracy_test': [], 'precision_test': [], 'recall_test': []}
 
 
@@ -56,7 +56,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--shadow_csv", type=str, default="./template_output.csv", help="path to csv containing the info about the shadow models.")
     parser.add_argument("--results_csv", type=str, default="./models_performance.csv", help="csv file where the performance of the shadow models will be output.")
-    parser.add_argument("--models_dir", type=str, default="./models", help="path to the directory that contains the states of the shadow models.")
+    parser.add_argument("--models_dir", type=str, default="./models/shadow_models", help="path to the directory that contains the states of the shadow models.")
     parser.add_argument("--cuda", action="store_true", default=False, help="use GPU.")
 
     args = parser.parse_args()

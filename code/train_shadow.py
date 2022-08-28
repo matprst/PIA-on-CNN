@@ -122,7 +122,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", nargs="+", required=True, help="space separated list of model architectures, can be a1 to a9")
     parser.add_argument("--csv", type=str, default="template_output.csv", help="path to csv files to store info about shadow models")
-    parser.add_argument("--models_dir", type=str, default="./models", help="path to the directory that will store the states of the shadow models.")
+    parser.add_argument("--models_dir", type=str, default="./models/shadow_models", help="path to the directory that will store the states of the shadow models.")
     parser.add_argument("--start_from", type=int, default=0, help="index to start from when naming the shadow models")
     parser.add_argument("--epochs", type=int, default=30, help="number of training epochs")
     parser.add_argument("--lr", type=float, default=0.001, help="learning rate")

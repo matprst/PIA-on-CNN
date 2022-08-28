@@ -111,8 +111,7 @@ def test_all_attacks(args, device):
             data['recall'].append(recall)
 
         df = pd.DataFrame(data)
-        # df.to_csv('models/attack_models/conv/attack_models_conv.csv', mode='a', header=False)
-        df.to_csv(args.results_csv, mode='a', header=False)
+        df.to_csv(args.results_csv, mode='a', header=True)
 
 def main():
     import argparse
