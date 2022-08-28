@@ -21,7 +21,8 @@ In case you want to train and evaluate the shadow models, you will also need to 
 Img/
 Anno/
 Eval/
-README.txt```
+README.txt
+```
 
 - go to `Img/` and download the zip file `img_align_celeba.zip`
 - go to `Ano/` and download all the `.txt` files, there should be 5
